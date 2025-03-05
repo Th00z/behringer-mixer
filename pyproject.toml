@@ -1,3 +1,29 @@
+[project]
+name = "behringer_mixer"
+description = "Module to communicate with Behringer digital mixers through OSC."
+version = "1.0.0"
+authors = [
+    {name = "wrodie", email = "warren@rodie.net"},
+    {name = "th00z", email = "haas@sciencetodo.org"},
+]
+license = {text = "MIT"}
+requires-python = "<4.0,>=3.12"
+dependencies = [
+    "python-osc<2.0.0,>=1.8.0",
+]
+readme = "README.md"
+
+[project.urls]
+repository = "https://github.com/th00z/behringer-mixer"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+includes = []
+
+
 [tool.poetry]
 name = "behringer_mixer"
 version = "0.4.7"
@@ -7,6 +33,13 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/wrodie/behringer-mixer"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-python-osc = "^1.8.0"
+[dependency-groups]
+documentation = [
+    "sphinx>=8.2.3",
+]
+test = [
+    "bandit[toml]>=1.8.3",
+    "pylint>=3.3.4",
+    "pytest>=8.3.5",
+    "ruff>=0.9.9",
+]
