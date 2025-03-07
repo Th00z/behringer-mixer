@@ -1,3 +1,6 @@
+"""
+
+"""
 def fader_to_db(value, config):
     """Convert fader value to dB"""
     if value >= 1:

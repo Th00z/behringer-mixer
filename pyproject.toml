@@ -9,6 +9,8 @@ authors = [
 license = {text = "MIT"}
 requires-python = "<4.0,>=3.12"
 dependencies = [
+    "jsonschema>=4.23.0",
+    "netaddr>=1.3.0",
     "python-osc<2.0.0,>=1.8.0",
 ]
 readme = "README.md"
@@ -22,16 +24,6 @@ build-backend = "pdm.backend"
 
 [tool.pdm.build]
 includes = []
-
-
-[tool.poetry]
-name = "behringer_mixer"
-version = "0.4.7"
-description = "Module to get basic information from Behringer digital mixers eg X32/XAir etc."
-authors = ["wrodie <warren@rodie.net>"]
-license = "MIT"
-readme = "README.md"
-repository = "https://github.com/wrodie/behringer-mixer"
 
 [dependency-groups]
 documentation = [

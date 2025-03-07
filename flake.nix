@@ -201,7 +201,7 @@
       # This example provides two different modes of development:
       # - Impurely using uv to manage virtual environments
       # - Pure development using uv2nix to manage virtual environments
-      devShells.x86_64-linux = {
+      devShells = {
         default = self.devShells.x86_64-linux.uv2nix;
         # It is of course perfectly OK to keep using an impure virtualenv workflow and only use uv2nix to build packages.
         # This devShell simply adds Python and undoes the dependency leakage done by Nixpkgs Python infrastructure.
@@ -251,7 +251,7 @@
 
                 # Apply fixups for building an editable package of your workspace packages
                 (final: prev: {
-                  behringer-mixer = prev.inventory-tools.overrideAttrs (old: {
+                  behringer-mixer = prev.behringer-mixer.overrideAttrs (old: {
                     # It's a good idea to filter the sources going into an editable build
                     # so the editable package doesn't have to be rebuilt on every change.
                     src = lib.fileset.toSource {

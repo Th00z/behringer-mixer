@@ -245,3 +245,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Special Thanks
 
 [Onyx-and-Iris](https://github.com/onyx-and-iris) for writing the XAir Python module
+
+
+| OSC-Command   | OSC-Type | Representation                                                           | Python Type  |         R          | W |
+|:--------------| :------- |:-------------------------------------------------------------------------|:-------------|:------------------:|:---:|
+| /$stat        | Node     | -                                                                        | -            | - | - |
+| /$stat/A      | Node     | -                                                                        | -            | - | - |
+| /$stat/A/stat | String | `await mixer.status.aes50_a.stat()`{:.language-python}                   | str | :white_check_mark: | :x: |
+| /$stat/A/dev  | String | `await mixer.status.aes50_a.dev()`{:.language-python}                    | str | :white_check_mark: | :x: |
+| /$stat/B      | Node     | -                                                                        | -            | - | - |
+| /$stat/B/stat | String | mixer.status.aes50_b.stat()                                              | str | :white_check_mark: | :x: |
+| /$stat/B/dev  | String | mixer.status.aes50_b.dev()                                               | str | :white_check_mark: | :x: |
+| /$stat/B      | Node     | -                                                                        | -            | - | - |
+| /$stat/B/stat | String | mixer.status.aes50_b.stat()                                              | str | :white_check_mark: | :x: |
+| /$stat/B/dev  | String | mixer.status.aes50_b.dev()                                               | str | :white_check_mark: | :x: |
