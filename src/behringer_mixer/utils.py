@@ -1,37 +1,6 @@
 """
 
 """
-def fader_to_db(value, config):
-    """Convert fader value to dB"""
-    if value >= 1:
-        return 10
-    elif value >= 0.5:
-        return round((40 * value) - 30, 1)
-    elif value >= 0.25:
-        return round((80 * value) - 50, 1)
-    elif value >= 0.0625:
-        return round((160 * value) - 70, 1)
-    elif value >= 0:
-        return round((480 * value) - 90, 1)
-    else:
-        return -90
-
-
-def db_to_fader(value, config):
-    """Convert dB to fader value"""
-    if value >= 10:
-        return 1
-    elif value >= -10:
-        return (value + 30) / 40
-    elif value >= -30:
-        return (value + 50) / 80
-    elif value >= -60:
-        return (value + 70) / 160
-    elif value >= -90:
-        return (value + 90) / 480
-    return 0
-
-
 _colors = [
     "OFF",
     "RD",
