@@ -202,7 +202,7 @@ class PrePostEndpoint(StringEnumEndpoint):
 
         :return:
         """
-        super()._init(valid_strings=[ "PRE", "POST" ])
+        super()._init(valid_strings=["PRE", "POST"])
 
 
 class InputModeEndpoint(StringEnumEndpoint):

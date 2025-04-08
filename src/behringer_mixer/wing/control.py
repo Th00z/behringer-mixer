@@ -1,12 +1,14 @@
 """
 
 """
+from copy import deepcopy
+
 from behringer_mixer.component import Component
 from behringer_mixer.exceptions import InvalidResponseException
 from . import endpoint
 
 
-class ConsoleLockLockedEndpoint(endpoint.StringEndpoint):
+class LockedEndpoint(endpoint.StringEndpoint):
     """
 
     """
@@ -43,7 +45,7 @@ class ConsoleLockLockedEndpoint(endpoint.StringEndpoint):
                 )
 
 
-class ConsoleLockButtonsEndpoint(ConsoleLockLockedEndpoint):
+class ButtonsEndpoint(LockedEndpoint):
     """
 
     """
@@ -95,7 +97,7 @@ class ConsoleLockButtonsEndpoint(ConsoleLockLockedEndpoint):
                 )
 
 
-class ControlStatusConsoleLock(Component):
+class ConsoleLock(Component):
     """
 
     """
@@ -104,23 +106,23 @@ class ControlStatusConsoleLock(Component):
     _endpoints = {
         "locked": {
             "path": "",
-            "class": ConsoleLockLockedEndpoint
+            "class": LockedEndpoint
         },
         "unlock_buttons": {
             "path": "",
-            "class": ConsoleLockButtonsEndpoint
+            "class": ButtonsEndpoint
         }
     }
 
 
-class ControlStatus(Component):
+class Status(Component):
     """
 
     """
     _components = {
         "console_lock": {
             "path": "/cnslock",
-            "class": ControlStatusConsoleLock,
+            "class": ConsoleLock,
             "aliases":  [ "cnslock" ]
         }
     }
@@ -171,9 +173,226 @@ class ControlStatus(Component):
                 3: "NAME",
                 4: "TAGS"
             },
-            "aliases": [ "chsetuptab" ]
+            "aliases": ["chsetuptab"]
         }
     }
+
+
+class ButtonLightsConfig(Component):
+    """
+
+    """
+    _components = {}
+
+    _endpoints = {
+        "backlight_intensity": {
+            "path": "/btns",
+            "class": endpoint.IntEndpoint,
+            "min": 0,
+            "max": 100,
+            "aliases": ["btns", "backlight", "backlight_brightness"]
+        },
+        "leds": {
+            "path": "/leds",
+            "class": endpoint.IntEndpoint,
+            "min": 5,
+            "max": 100,
+            "aliases": [
+                "leds_intensity", "led_light_intensity", "leds_brightness", "led_light_brightness"
+            ]
+        }
+    }
+
+
+class ChannelLCDConfig(Component):
+    """
+
+    """
+    _components = {}
+
+    _endpoints = {
+        "backlight_intensity": {
+            "path": "s",
+            "class": endpoint.IntEndpoint,
+            "min": 5,
+            "max": 100,
+            "aliases": [
+                "chlcds", "backlight", "backlight_brightness", "channel_lcd_intensity", "channel_lcd_brightness",
+                "intensity", "brightness"
+            ]
+        },
+        "contrast": {
+            "path": "ctr",
+            "class": endpoint.IntEndpoint,
+            "min": 0,
+            "max": 100,
+            "aliases": ["ctr"]
+        }
+    }
+
+
+class LightsConfig(Component):
+    """
+
+    """
+    _components = {
+        "buttons": {
+            "path": "",
+            "class": ButtonLightsConfig,
+            "aliases": ["button"]
+        },
+        "channel_lcd": {
+            "path": "/chlcd",
+            "class": ChannelLCDConfig,
+            "aliases": ["lcd"]
+        }
+    }
+
+    _endpoints = {
+        "meters": {
+            "path": "/meters",
+            "class": endpoint.IntEndpoint,
+            "min": 0,
+            "max": 100,
+            "aliases": ["meters_intensity"]
+        },
+        "scribble_lights": {
+            "path": "/rgbleds",
+            "class": endpoint.IntEndpoint,
+            "min": 0,
+            "max": 100,
+            "aliases": ["rgbleds", "rgb_leds", "color_leds", "color_led_intensity"]
+        },
+        "channel_strip": {
+            "path": "/chedit",
+            "class": endpoint.IntEndpoint,
+            "min": 5,
+            "max": 100,
+            "aliases": ["chedit", "channel_strip_intensity", "channel_strip_brightness"]
+        },
+        "touchscreen": {
+            "path": "/main",
+            "class": endpoint.IntEndpoint,
+            "min": 5,
+            "max": 100,
+            "aliases": ["main", "touchscreen_intensity", "touchscreen_brightness"]
+        },
+        "under_console": {
+            "path": "/glow",
+            "class": endpoint.IntEndpoint,
+            "min": 0,
+            "max": 100,
+            "aliases": [
+                "glow", "glow_intensity", "glow_brightness", "under_console_intensity", "under_console_brightness"
+            ]
+        },
+        "patch_panel": {
+            "path": "/patch",
+            "class": endpoint.IntEndpoint,
+            "min": 0,
+            "max": 100,
+            "aliases": [
+                "patch", "patch_intensity", "patch_brightness", "panel", "panel_intensity", "panel_brightness",
+                "patch_panel_intensity", "patch_panel_brightness"
+            ]
+        },
+        "lamp": {
+            "path": "/lamp",
+            "class": endpoint.IntEndpoint,
+            "min": 0,
+            "max": 100,
+            "aliases": ["lamp_intensity", "lamp_brightness"]
+        }
+    }
+
+
+class RTAHomeConfig(Component):
+    """
+
+    """
+    _components = {}
+
+    _endpoints = {
+        "size": {
+            "path": "disp",
+            "class": endpoint.StringEnumEndpoint,
+            "valid_strings": ["OFF", "1/3", "FULL"],
+            "aliases": ["disp", "mode"]
+        },
+        "color": {
+            "path": "col",
+            "class": endpoint.StringEnumEndpoint,
+            "valid_strings": [
+                "RD25", "RD50", "RD75", "AM25", "AM50", "AM75", "BL25", "BL50", "BL75"
+            ],
+            "aliases": ["col", "colour"]
+        },
+        "tap": {
+            "path": "tap",
+            "class": endpoint.StringEnumEndpoint,
+            "valid_strings": ["IN", "EQ", "POST"]
+        }
+    }
+
+
+class RTAEQConfig(RTAHomeConfig):
+    """
+
+    """
+    _endpoints = deepcopy(RTAHomeConfig._endpoints)
+    _endpoints["size"].update({
+        "path": "/eqdisp",
+        "valid_strings": ["OFF", "1/4", "1/3", "1/2", "OVL/", "OVL"]
+    })
+    _endpoints["color"].update({
+        "path": "/eqcol",
+    })
+    _endpoints["tap"].update({
+        "path": "/cheqtap",
+        "valid_strings": ["PRE", "POST"]
+    })
+
+
+class RTAConfig(Component):
+    """
+
+    """
+    _components = {
+        "home": {
+            "path": "/home",
+            "class": RTAHomeConfig
+        },
+        "eq": {
+            "path": "",
+            "class": RTAEQConfig
+        }
+    }
+
+    _endpoints = {
+        "filter_tap": {
+            "path": "/chflttap",
+            "class": endpoint.PrePostEndpoint,
+            "aliases": ["chflttap"]
+        }
+    }
+
+
+class Config(Component):
+    """
+
+    """
+    _components = {
+        "lights": {
+            "path": "/lights",
+            "class": LightsConfig
+        },
+        "rta": {
+            "path": "/rta",
+            "class": RTAConfig
+        }
+    }
+
+    _endpoints = {}
 
 
 class Control(Component):
@@ -183,8 +402,13 @@ class Control(Component):
     _components = {
         "status": {
             "path": "/$stat",
-            "class": ControlStatus,
-            "aliases": [ "stat" ]
+            "class": Status,
+            "aliases": ["stat"]
+        },
+        "config": {
+            "path": "/cfg",
+            "class": Config,
+            "aliases": ["cfg", "configuration"]
         }
     }
 
