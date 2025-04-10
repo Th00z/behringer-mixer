@@ -183,7 +183,7 @@ class StringMappingEndpoint(StringEnumEndpoint):
         for internal_name, name in self._string_mapping.items():
             if isinstance(name, list):
                 if value in name:
-                    return key
+                    return internal_name
             if value == name:
                 return internal_name
         raise IllegalQueryException(
@@ -344,9 +344,9 @@ class IntMappingEndpoint(IntEndpoint):
     """
 
     """
-    _int_mapping: Dict[int, str]
+    _int_mapping: dict
 
-    def _init(self, int_mapping: Dict[int, str], read_offset: int = 0):
+    def _init(self, int_mapping: dict, read_offset: int = 0):
         """
         :return:
         """
@@ -359,23 +359,53 @@ class IntMappingEndpoint(IntEndpoint):
         :param response:
         :return:
         """
-        response = super()._parse_response(response=response)
-        return self._int_mapping[response]
+        index = super()._parse_response(response=response)
+        name = self._int_mapping[index]
+        if isinstance(name, list):
+            return name[0]
+        return name
 
-    def _parse_parameter(self, parameter: str) -> str:
+    def _parse_parameter(self, parameter: int | str) -> str:
         """
 
         :param parameter:
         :return:
         """
-        reverse_int_mapping = { value: key for key, value in self._int_mapping.items() }
-        if parameter not in reverse_int_mapping:
-            raise IllegalQueryException(
-                f"'{parameter}' is not a valid value for endpoint! "
-                f"Valid values: {', '.join(self._int_mapping.values())}",
-                path=self.path
-            )
-        return super()._parse_parameter(parameter=reverse_int_mapping[parameter])
+        try:
+            return super()._parse_parameter(parameter=self.reverse_map(value=parameter))
+        except IllegalQueryException as e:
+            if "is not a valid value for endpoint" in str(e):
+                try:
+                    return super()._parse_parameter(parameter=parameter)
+                except IllegalQueryException as e2:
+                    if "is not a valid value for endpoint" in str(e2):
+                        valid_values = []
+                        for index, name in self._int_mapping.items():
+                            valid_values.append(f"'{str(name)}'/'{index}'")
+                        raise IllegalQueryException(
+                            f"'{parameter}' is not a valid value for endpoint!"
+                            f"Valid values: {', '.join(valid_values)}"
+                        ) from e
+            else:
+                raise e
+
+    def _reverse_map(self, value):
+        """
+
+        :param value:
+        :return:
+        """
+        for index, name in self._int_mapping.items():
+            if isinstance(name, list):
+                if value in name:
+                    return index
+            if value == name:
+                return index
+        raise IllegalQueryException(
+            f"'{str(value)}' is not a valid value for endpoint! "
+            f"Valid values: {', '.join([str(i) for i in self._int_mapping.values()])}",
+            path=self.path
+        )
 
 
 class BoolEndpoint(IntEndpoint):
